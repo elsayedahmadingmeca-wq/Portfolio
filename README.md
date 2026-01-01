@@ -37,12 +37,3 @@ I repeated the simulation on a finer mesh:
 - center von Mises stress difference: **≈ 1–2%**
 
 Temperature converges faster than stress (expected), and the chosen mesh is acceptable for the study.
-
----
-
-## How to run
-
-Generate the mesh:
-
-```bash
-python make_tube_mesh.py
