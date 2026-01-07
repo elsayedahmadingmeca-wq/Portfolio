@@ -142,4 +142,4 @@ m_tri = meshio.Mesh(
 )
 meshio.write("tube_facets_linear.xdmf", m_tri)
 
-print("✅ Wrote tube.xdmf and tube_facets.xdmf successfully.")
+print(" Wrote tube.xdmf and tube_facets.xdmf successfully.")
