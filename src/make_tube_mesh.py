@@ -16,7 +16,7 @@ import os
 L = 0.04          # tube length [m]
 D = 0.005         # outer diameter [m]
 R = D / 2
-Ri = 0
+
 res_axial = 4   # number of divisions along length was 4
 res_circ  = 8   # around circumference
 
@@ -33,12 +33,7 @@ gmsh.model.add("tube")
 # ---------------- Geometry ----------------
 # Build outer and inner cylinders along +Z
 outer = gmsh.model.occ.addCylinder(0, 0, 0, 0, 0, L, R)
-if Ri > 0:
-    inner = gmsh.model.occ.addCylinder(0, 0, 0, 0, 0, L, Ri)
-    vol = gmsh.model.occ.cut([(3, outer)], [(3, inner)], removeObject=True, removeTool=True)
-    vtag = vol[0][1]
-else:
-    vtag = outer
+vtag = outer
 gmsh.model.occ.synchronize()
 
 # Tag surfaces
@@ -47,15 +42,11 @@ top = gmsh.model.getEntitiesInBoundingBox(-R-1e-6, -R-1e-6, L-1e-6,
                                           R+1e-6, R+1e-6, L+1e-6, 2)
 bot = gmsh.model.getEntitiesInBoundingBox(-R-1e-6, -R-1e-6, -1e-6,
                                           R+1e-6, R+1e-6, 1e-6, 2)
-inner = []
-if Ri > 0:
-    inner = gmsh.model.getEntitiesInBoundingBox(-Ri-1e-6, -Ri-1e-6, 1e-6,
-                                                Ri+1e-6, Ri+1e-6, L-1e-6, 2)
-# lateral = all boundary - top - bottom - inner
+
+# lateral = all boundary - top - bottom 
 top_ids = {s[1] for s in top}
 bot_ids = {s[1] for s in bot}
-inner_ids = {s[1] for s in inner}
-lat = [(2, s[1]) for s in surf_all if s[1] not in top_ids | bot_ids | inner_ids]
+lat = [(2, s[1]) for s in surf_all if s[1] not in top_ids | bot_ids ]
 
 # ---------------- Physical groups ----------------
 gmsh.model.addPhysicalGroup(3, [vtag], 1)
@@ -64,7 +55,6 @@ gmsh.model.setPhysicalName(3, 1, "TUBE")
 if top:     gmsh.model.addPhysicalGroup(2, [s[1] for s in top], 101)
 if bot:     gmsh.model.addPhysicalGroup(2, [s[1] for s in bot], 102)
 if lat:     gmsh.model.addPhysicalGroup(2, [s[1] for s in lat], 103)
-if inner:   gmsh.model.addPhysicalGroup(2, [s[1] for s in inner], 104)
 
 # ---------------- Mesh settings ----------------
 gmsh.option.setNumber("Mesh.CharacteristicLengthMin", lc)
