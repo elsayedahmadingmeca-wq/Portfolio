@@ -109,13 +109,11 @@ Result: max residual = 1.04e-8  (floating-point level)  ✅
 ```
 explicit_dynamics/
   mesh/
-    generate_mesh.py           ← Gmsh script for the tube geometry
-    tube.xdmf
-    tube_facets_linear.xdmf
+    mesh.py           ← Gmsh script for the tube geometry
+    
   src/
-    explicit_solver.py         ← main solver with inline validation
+    dynamic.py         ← main solver with inline validation
   docs/
-    report_explicit_tube.tex   ← governing equations and code dissection
     physics.pdf                ← compiled report
 ```
 
