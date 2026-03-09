@@ -19,7 +19,6 @@ allowing direct comparison of static vs dynamic stress fields.
 - Mass-proportional Rayleigh damping — compatible with explicit integration
 - Two-axis sinusoidal prescribed displacement: 200 Hz, 15 mm amplitude
 
-Full governing equations, weak form, and code dissection: [`docs/physics.pdf`](docs/physics.pdf)
 
 ---
 
