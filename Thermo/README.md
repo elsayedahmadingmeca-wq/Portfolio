@@ -1,120 +1,86 @@
-# Thermo–Hyperelastic Tube (FEniCSx)
+# Transient Thermo-Mechanical FEM — Hyperelastic Tube (FEniCSx)
 
-3-D thermo-mechanical simulation of a cylindrical tube using FEniCSx.
-The model couples transient heat conduction with finite-strain hyperelasticity
-through a one-way staggered scheme, and applies realistic thermal and
-mechanical boundary conditions.
+Sequential one-way thermo-mechanical coupling for a hyperelastic tube
+under prescribed thermal loading, built from scratch in FEniCSx.
 
-The same geometry and mesh are used in a companion project on
-[explicit nonlinear dynamics](https://github.com/elsayedahmadingmeca-wq/explicit-nonlinear-dynamics-fenicsx),
-which adds inertia effects and wave propagation to the same tube.
+Part of a two-project portfolio — see the companion project
+[`explicit_dynamics/`](../explicit_dynamics/) which uses the same
+geometry and material under dynamic shock loading, allowing direct
+comparison of static vs dynamic stress fields.
 
 ---
 
 ## Physics
 
-- Transient heat conduction — backward Euler (implicit), convection at bottom surface
-- Prescribed temperature ramp at top surface
-- Hyperelastic mechanics — compressible Neo-Hookean with thermal expansion
-- Multiplicative decomposition: **F = Fₑ · Fth⁻¹**
-- Top face fixed, bottom face: linear ramp + sinusoidal displacement
+- Transient heat equation — implicit Euler time integration
+- Quasi-static large-deformation mechanics — total Lagrangian
+- One-way sequential coupling: thermal field drives mechanical solve
+- Multiplicative decomposition: F = F_e · F_th⁻¹
+- Compressible Neo-Hookean strain energy on elastic part F_e
+- ν = 0.49 (near-incompressible), E = 5 MPa, ρ = 1250 kg/m³
 
-Coupling is one-way: **T → Fth(T) → u**
-
-Temperature drives expansion and stress. Mechanical deformation does not
-feed back into the heat equation (standard reduced thermoelastic assumption,
-consistent with Bonnet and Ogden).
-
-Full governing equations and weak form: [`physics.pdf`](physics.pdf)
+Thermal boundary conditions: imposed temperature, Newton convection,
+insulated surface.
 
 ---
 
-## Model overview
+## Numerical details
 
-**Thermal problem** (solved first at each step)
+**Time integration — heat equation**
 
-Find T such that:
+Implicit Euler on the transient heat equation:
 ```
-∫ ρcp (T_new - T_old)/Δt · w dV  +  ∫ k ∇T · ∇w dV  +  ∫ h T w dS  =  ∫ h T∞ w dS
+ρ·c_p·(T^{n+1} - T^n)/Δt + K·T^{n+1} = f_th
 ```
-Backward Euler — unconditionally stable, first-order in time.
+Unconditionally stable — no CFL constraint on the thermal step.
+Large time steps can be used as long as the thermal gradient
+evolution is slow relative to the mechanical response.
 
-**Mechanical problem** (solved second, using updated T)
+**Nonlinear mechanical solve — Newton with line-search**
 
-Find u such that:
+At each thermal step, the mechanical problem is solved by Newton
+iteration with backtracking line-search (Armijo condition):
 ```
-∫ P(Fe) : ∇v dV = 0
+K_T · δU = -R(U)
+U ← U + β · δU      (β ∈ (0,1] found by backtracking)
 ```
-where Fe = F · Fth⁻¹ strips thermal strain from the total deformation.
-Solved with Newton–Raphson + backtracking line search.
+Preconditioner: hypre algebraic multigrid via PETSc,
+effective for the near-incompressible system.
 
----
+**Thermal expansion — multiplicative decomposition**
 
-## What I extract from the simulation
-
-- 🔹 Temperature at tube centre vs time
-- 🔹 Von Mises stress at tube centre vs time
-- 🔹 Temperature field at final time step
-- 🔹 Cauchy stress field (projected onto DG0 space)
-
-All fields saved as XDMF and viewed in ParaView.
-
----
-
-## Quick convergence sanity check
-
-Simulation repeated on a finer mesh:
-
-| Mesh  | T_centre [K] | σ_vm,centre [Pa] |
-|-------|-------------|-----------------|
-| Fine  | 332.30      | 1.039 × 10⁷     |
-| Finer | 332.31      | 1.029 × 10⁷     |
-
-Temperature difference < 0.5%. Von Mises difference ≈ 1%.
-Temperature converges faster than stress (expected for P1 elements —
-stress involves spatial gradients and converges one order slower).
-The chosen mesh is sufficient for the qualitative objectives.
-
----
-
-## Repo structure
-
+The deformation gradient is split as:
 ```
-src/
-  coupling_dynamic_disp.py   ← main coupled solver
-mesh/
-  tube.xdmf
-  tube_facets_linear.xdmf
-Figures/                     ← ParaView output snapshots
-physics.pdf                  ← governing equations and weak form
-Report.pdf                   ← full simulation report with results
+F = F_e · F_th⁻¹
+F_th = (1 + α·ΔT)·I     (isotropic thermal expansion)
+```
+The Neo-Hookean strain energy is evaluated on F_e only,
+so thermal strains generate no stress when unconstrained.
+Cauchy stress is obtained by push-forward of the PK1 stress.
+
+**Stress post-processing**
+
+Von Mises stress and full stress tensor are projected onto
+a discontinuous Galerkin space (DG0 — piecewise constant per element)
+for ParaView output:
+```python
+V_dg = fem.functionspace(mesh, ("DG", 0))
+sigma_vm = fem.Function(V_dg, name="von_mises")
 ```
 
 ---
 
-## Dependencies
+## What the simulation produces
 
-```
-dolfinx >= 0.7
-mpi4py
-petsc4py
-numpy
-```
+- 🔹 Temperature field T(x,t) — XDMF → ParaView
+- 🔹 Displacement field u(x,t)
+- 🔹 Von Mises stress and full stress tensor (DG0 projection)
+- 🔹 Time history of max temperature and max von Mises stress
 
----
 
 ## References
 
-- Logg, Mardal, Wells. *Automated Solution of Differential Equations by the FEM (FEniCS Book).*
-  Springer, 2012. — [fenicsproject.org/book](https://fenicsproject.org/book) (open access)
-  — variational formulation, UFL, FEniCSx assembly patterns
-
-- Dokken. *The FEniCSx Tutorial*, 2023. — [jsdokken.com/dolfinx-tutorial](https://jsdokken.com/dolfinx-tutorial)
-  — nonlinear mechanics, heat equation, Newton solver in FEniCSx
-
 - Bonet, Wood. *Nonlinear Continuum Mechanics for Finite Element Analysis*, 2nd ed. Cambridge, 2008.
-  — Neo-Hookean energy, multiplicative F=FeFth decomposition, Cauchy stress
-
-- Dokken, Bleyer et al. *FEniCSx numerical tours* — [bleyerj.github.io/fenics-tutorial](https://bleyerj.github.io/fenics-tutorial)
-  — thermo-mechanical coupling examples in FEniCSx
-
+- Logg, Mardal, Wells. *Automated Solution of Differential Equations by the FEM.*
+  Springer, 2012. — [fenicsproject.org/book](https://fenicsproject.org/book)
+- Dokken. *The FEniCSx Tutorial*, 2023. — [jsdokken.com/dolfinx-tutorial](https://jsdokken.com/dolfinx-tutorial)
