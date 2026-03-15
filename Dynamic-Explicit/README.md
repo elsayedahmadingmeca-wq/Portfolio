@@ -43,7 +43,7 @@ yields an $\mathcal{O}(N)$ update per step, bypassing global linear solvers (KSP
 | 1. Predictor | $\mathbf{U}^{n+1,\*} = \mathbf{U}^n + \Delta t\,\dot{\mathbf{U}}^n + \frac{\Delta t^2}{2}\ddot{\mathbf{U}}^n$ |
 | 2. Force assembly | Evaluate $\mathbf{f}_{int}(\mathbf{U}^{n+1,\*})$ with MPI ghost scatters |
 | 3. Acceleration | $\ddot{\mathbf{U}}^{n+1} = \mathbf{M}_L^{-1}\,\mathbf{f}_{int}(\mathbf{U}^{n+1,\*})$ |
-| 4. Velocity corrector | $\dot{\mathbf{U}}^{n+1} = \dot{\mathbf{U}}^n + \frac{\Delta t}{2}\!\left(\ddot{\mathbf{U}}^n + \ddot{\mathbf{U}}^{n+1}\right)$ |
+| 4. Velocity corrector | $\dot{\mathbf{U}}^{n+1} = \dot{\mathbf{U}}^n + \frac{\Delta t}{2}\left(\ddot{\mathbf{U}}^n + \ddot{\mathbf{U}}^{n+1}\right)$ |
 
 ---
 
