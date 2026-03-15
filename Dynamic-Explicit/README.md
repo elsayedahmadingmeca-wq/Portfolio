@@ -3,7 +3,7 @@
 A high-performance **3D explicit finite element solver** for the transient dynamics of a hyperelastic tube. Built with **FEniCSx**, this solver handles high-frequency kinematic loading where traditional implicit methods become prohibitively expensive due to ill-conditioning.
 
 > [!TIP]
-> This project is part of a two-project portfolio. See the companion [thermo/](../thermo/) repository for quasi-static comparisons using the same geometry.
+> This project is part of a two-project portfolio. See the companion [Thermo/](../Thermo/) repository for quasi-static comparisons using the same geometry.
 
 ## 🚀 Physics & Methodology
 
