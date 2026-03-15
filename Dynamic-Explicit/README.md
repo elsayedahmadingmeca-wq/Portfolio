@@ -26,7 +26,7 @@ $$\psi(\mathbf{F}) = \frac{\mu}{2}(I_c - 3) - \mu \ln J + \frac{\lambda}{2}(\ln 
 
 $$\mathbf{P} = \frac{\partial \psi}{\partial \mathbf{F}}$$
 
-**Restoring Forces** — The internal force vector $\mathbf{f}_\text{int} = -\partial E_\text{pot}/\partial \mathbf{U}$
+**Restoring Forces** — The internal force vector $$\mathbf{f}_\text{int} = -\partial E_\text{pot}/\partial \mathbf{U}$$
 is consistent with the equation of motion:
 
 $$\mathbf{M}\,\ddot{\mathbf{U}} = \mathbf{f}_\text{int}$$
