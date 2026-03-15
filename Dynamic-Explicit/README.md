@@ -6,7 +6,7 @@ methods become prohibitively expensive due to ill-conditioning.
 
 > [!TIP]
 > This project is part of a two-project portfolio. See the companion
-> [thermo_mechanical/](../thermo_mechanical/) repository for quasi-static comparisons using the same geometry.
+> [thermo_mechanical/](../Thermo/) repository for quasi-static comparisons using the same geometry.
 
 ---
 
