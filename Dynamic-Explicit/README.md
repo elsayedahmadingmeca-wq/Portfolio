@@ -98,7 +98,7 @@ $$R_i = (M_L)_{ii}\,a_{\text{prescribed},\,i} - (f_\text{int})_i, \qquad \Delta 
 
 | Check | Metric | Value |
 |-------|--------|-------|
-| Energy balance | Relative Hamiltonian drift | $0.1218 \percent $ |
+| Energy balance | Relative Hamiltonian drift | $0.001218  $ |
 | Momentum residual | Max relative residual | $2.69 \times 10^{-9}$ |
 
 
