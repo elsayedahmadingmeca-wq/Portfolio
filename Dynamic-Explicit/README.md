@@ -65,8 +65,9 @@ $$\Delta t = \alpha_s \frac{h_{\min}}{c_\text{mech}}, \qquad c_\text{mech} = \sq
 
 | Parameter | Value |
 |-----------|-------|
-| Wave speed $c_\text{mech}$ | $\approx 115\ \text{m/s}$ |
-| Timestep $\Delta t$ | $\approx 5.7 \times 10^{-7}\ \text{s}$ |
+| Wave speed $c_\text{mech}$ | $261.64\ \text{m/s}$ |
+| Timestep $\Delta t$ | $5.6941 \times 10^{-7}\ \text{s}$ |
+| Minimum element size $h_{\min}$ | $4.9660 \times 10^{-4}\ \text{m}$ |
 | Safety factor $\alpha_s$ | $0.3$ |
 
 ### 3. MPI Ghost Communication
