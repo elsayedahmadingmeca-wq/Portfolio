@@ -4,7 +4,7 @@ Sequential one-way thermo-mechanical coupling for a hyperelastic tube
 under prescribed thermal loading, built from scratch in FEniCSx.
 
 Part of a two-project portfolio — see the companion project
-[`explicit_dynamics/`](../Explicit_Dynamics/) which uses the same
+[`explicit_dynamics/`](../Dynamics_Explicit/) which uses the same
 geometry and material under dynamic shock loading, allowing direct
 comparison of static vs dynamic stress fields.
 
