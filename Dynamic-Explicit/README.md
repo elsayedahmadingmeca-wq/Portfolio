@@ -28,7 +28,7 @@ $$\mathbf{P} = \frac{\partial \psi}{\partial \mathbf{F}}$$
 
 **Restoring Forces** — The internal force vector is consistent with the equation of motion:
 
-$$\mathbf{M}\,\ddot{\mathbf{U}} = \mathbf{f}_\text{int}$$
+$$\mathbf{M}\\ddot{\mathbf{U}} = \mathbf{f}_\text{int}$$
 
 ---
 
