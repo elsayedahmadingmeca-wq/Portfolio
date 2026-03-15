@@ -1,36 +1,36 @@
 # Explicit Nonlinear Dynamics: Hyperelastic Tube (FEniCSx)
 
-A high-performance **3-D explicit finite element solver** for the transient dynamics of a hyperelastic tube. This solver is built from the ground up in **FEniCSx** to handle high-frequency kinematic loading where traditional implicit methods fail or become prohibitively expensive.
+A high-performance **3D explicit finite element solver** for the transient dynamics of a hyperelastic tube. Built with **FEniCSx**, this solver handles high-frequency kinematic loading where traditional implicit methods become prohibitively expensive due to ill-conditioning.
 
-This project is part of a two-project portfolio. See the companion [thermo_mechanical/](../thermo_mechanical/) repository for quasi-static comparisons using the same geometry.
+> [!TIP]
+> This project is part of a two-project portfolio. See the companion [thermo_mechanical/](../thermo_mechanical/) repository for quasi-static comparisons using the same geometry.
 
 ## 🚀 Physics & Methodology
 
 ### Constitutive Model
-The material is modeled as a **compressible Neo-Hookean** solid with $\nu = 0.49$. In this near-incompressible regime, the bulk modulus $K$ is roughly 83 times the shear modulus $\mu$, creating a challenging numerical environment.
+The material is modeled as a **compressible Neo-Hookean** solid with $\nu = 0.49$. In this near-incompressible regime, the bulk modulus $K$ is significantly larger than the shear modulus $\mu$, requiring strict time-step control.
 
-* **UFL Automatic Differentiation:** Rather than deriving the first Piola–Kirchhoff stress $\mathbf{P} = \partial\psi/\partial\mathbf{F}$ by hand, we leverage UFL to differentiate the strain energy density $\psi$ symbolically.
-* **Restoring Forces:** The internal force $f_{int} = -\partial E_{pot}/\partial U$ is computed such that it remains consistent with the equation of motion $M\ddot{U} = f_{int}$.
+* **UFL Automatic Differentiation:** We leverage the Unified Form Language (UFL) to differentiate the strain energy density $\psi$ symbolically:
+    $$\mathbf{P} = \frac{\partial \psi}{\partial \mathbf{F}}$$
+* **Restoring Forces:** The internal force vector $\mathbf{f}_{int} = -\frac{\partial E_{pot}}{\partial \mathbf{U}}$ is computed to remain consistent with the equation of motion $\mathbf{M}\ddot{\mathbf{U}} = \mathbf{f}_{int}$.
 
 ### Explicit Newmark Scheme ($\beta=0, \gamma=1/2$)
-The solver utilizes the **central difference** family of Newmark integrators. Unlike implicit versions, this approach uses a **row-sum lumped mass matrix** ($M_L$), enabling an $\mathcal{O}(N)$ update without any global linear solves.
+The solver utilizes the **central difference** method. By implementing a **row-sum lumped mass matrix** ($\mathbf{M}_L$), we achieve an $\mathcal{O}(N)$ update per step, bypassing the need for global linear solvers (KSP).
 
 #### The Update Cycle ($n \to n+1$):
-1.  **Predictor:** $U_{n+1,*} = U_n + \Delta t \dot{U}_n + \frac{\Delta t^2}{2} \ddot{U}_n$
-2.  **Internal Force Assembly:** Evaluated at $U_{n+1,*}$ with MPI ghost scatters.
-3.  **Acceleration Update:** $\ddot{U}_{n+1} = M_L^{-1} f_{int}(U_{n+1,*})$
-4.  **Velocity Corrector:** $\dot{U}_{n+1} = \dot{U}_n + \frac{\Delta t}{2}(\ddot{U}_n + \ddot{U}_{n+1})$
+1.  **Predictor:** $\mathbf{U}_{n+1,*} = \mathbf{U}_n + \Delta t \dot{\mathbf{U}}_n + \frac{\Delta t^2}{2} \ddot{\mathbf{U}}_n$
+2.  **Internal Force Assembly:** Evaluated at $\mathbf{U}_{n+1,*}$ with MPI ghost scatters.
+3.  **Acceleration Update:** $\ddot{\mathbf{U}}_{n+1} = \mathbf{M}_L^{-1} \mathbf{f}_{int}(\mathbf{U}_{n+1,*})$
+4.  **Velocity Corrector:** $\dot{\mathbf{U}}_{n+1} = \dot{\mathbf{U}}_n + \frac{\Delta t}{2}(\ddot{\mathbf{U}}_n + \ddot{\mathbf{U}}_{n+1})$
 
 ---
 
-## 🛠 Critical Numerical Corrections
+## 🛠 Critical Numerical Implementation
 
 ### 1. Kinematic Consistency (The "Drift" Fix)
-In explicit integration over $O(10^5)$ steps, Dirichlet DOFs often accumulate spurious velocity residuals. To prevent the boundary from drifting away from the analytical trajectory, we explicitly overwrite the boundary kinematics after the corrector:
+In explicit integration over $10^5+$ steps, Dirichlet DOFs can accumulate spurious velocity residuals. To prevent boundary drift, we enforce analytical kinematics post-correction:
 
 ```python
-# Overwrite boundary velocities and accelerations analytically
-v_new[dofs_bot_z] = vz_bot   # Analytical dz/dt
-v_new[dofs_bot_y] = vy_bot
-a_new[dofs_bot_z] = az_bot   # Prescribed acceleration (Critical for Energy!)
-a_new[dofs_bot_y] = ay_bot
+# Analytical enforcement at boundary DOFs
+v_new[dofs_bot_z] = vz_bot   # Prescribed velocity
+a_new[dofs_bot_z] = az_bot   # Prescribed acceleration (Critical for Energy Balance!)
