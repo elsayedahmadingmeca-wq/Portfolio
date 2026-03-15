@@ -16,20 +16,6 @@ The material is modeled as a **compressible Neo-Hookean** solid with $\nu = 0.49
 
 ### Explicit Newmark Scheme ($\beta=0, \gamma=1/2$)
 The solver utilizes the **central difference** method. By implementing a **row-sum lumped mass matrix** ($\mathbf{M}_L$), we achieve an $\mathcal{O}(N)$ update per step, bypassing the need for global linear solvers (KSP).
-#### The Update Cycle ($n \to n+1$)
-
-1. **Predictor:**  
-   $\mathbf{U}_{n+1,*} = \mathbf{U}_n + \Delta t \dot{\mathbf{U}}_n + \frac{\Delta t^2}{2} \ddot{\mathbf{U}}_n$
-
-2. **Internal Force Assembly:**  
-   Evaluated at $\mathbf{U}_{n+1,*}$ with MPI ghost scatters.
-
-3. **Acceleration Update:**  
-   $\ddot{\mathbf{U}}_{n+1} = \mathbf{M}_L^{-1} \mathbf{f}_{int}(\mathbf{U}_{n+1,*})$
-
-4. **Velocity Corrector:**  
-   $\dot{\mathbf{U}}_{n+1} = \dot{\mathbf{U}}_n + \frac{\Delta t}{2}(\ddot{\mathbf{U}}_n + \ddot{\mathbf{U}}_{n+1})$
-## Critical Numerical Implementation
 
 ### 1. Kinematic Consistency (The "Drift" Fix)
 In explicit integration over $10^5+$ steps, Dirichlet DOFs can accumulate spurious velocity residuals. To prevent boundary drift, we enforce analytical kinematics post-correction:
