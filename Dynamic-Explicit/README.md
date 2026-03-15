@@ -6,7 +6,7 @@ methods become prohibitively expensive due to ill-conditioning.
 
 > [!TIP]
 > This project is part of a two-project portfolio. See the companion
-> [thermo_mechanical/](../thermo_mechanical/) repository for quasi-static comparisons using the same geometry.
+> [thermo_mechanical/](../Thermo/) repository for quasi-static comparisons using the same geometry.
 
 ---
 
@@ -38,14 +38,6 @@ $$\mathbf{M}\,\ddot{\mathbf{U}} = \mathbf{f}_\text{int}$$
 The solver uses the **central difference** method. A **row-sum lumped mass matrix** $\mathbf{M}_L$
 yields an $\mathcal{O}(N)$ update per step, bypassing global linear solvers (KSP).
 
-#### Update Cycle ($n \to n+1$)
-
-| Step | Operation |
-|------|-----------|
-| 1. Predictor | $\mathbf{U}^{n+1,\*} = \mathbf{U}^n + \Delta t\,\dot{\mathbf{U}}^n + \dfrac{\Delta t^2}{2}\ddot{\mathbf{U}}^n$ |
-| 2. Force assembly | Evaluate $\mathbf{f}_\text{int}(\mathbf{U}^{n+1,\*})$ with MPI ghost scatters |
-| 3. Acceleration | $\ddot{\mathbf{U}}^{n+1} = \mathbf{M}_L^{-1}\,\mathbf{f}_\text{int}(\mathbf{U}^{n+1,\*})$ |
-| 4. Velocity corrector | $\dot{\mathbf{U}}^{n+1} = \dot{\mathbf{U}}^n + \dfrac{\Delta t}{2}\!\left(\ddot{\mathbf{U}}^n + \ddot{\mathbf{U}}^{n+1}\right)$ |
 
 ---
 
@@ -109,11 +101,6 @@ $$R_i = (M_L)_{ii}\,a_{\text{prescribed},\,i} - (f_\text{int})_i, \qquad \Delta 
 | Energy balance | Relative Hamiltonian drift | $0.1218\%$ |
 | Momentum residual | Max relative residual | $2.69 \times 10^{-9}$ |
 
-![Energy and Hamiltonian](energy_hamiltonian.png)
-*Near-constant Hamiltonian (blue) despite large kinetic ↔ potential energy exchanges.*
-
-![Momentum Residual](momentum_residual.png)
-*Relative momentum residual near $10^{-9}$, confirming parallel assembly correctness.*
 
 ---
 
