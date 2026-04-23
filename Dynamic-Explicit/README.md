@@ -119,3 +119,7 @@ Implicit Newmark ($\beta = 1/4$) requires a nonlinear solve every step — unatt
 - J. Bonet, R. D. Wood. *Nonlinear Continuum Mechanics for Finite Element Analysis*. Cambridge, 2008.
 - A. Logg et al. *Automated Solution of Differential Equations by the FEM*. Springer, 2012.
 - J. S. Dokken. *The FEniCSx Tutorial*, 2023.
+- E. Chatzi, G. Abbiati, and K. Agathos,
+"The Finite Element Method for the Analysis of Non-Linear and Dynamic Systems: Non-Linear Dynamics Part I,"
+Lecture 5/Part A, Method of Finite Elements II,
+ETH Zürich, Nov. 23, 2017.
