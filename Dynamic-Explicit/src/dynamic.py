@@ -268,10 +268,7 @@ for n in range(num_steps):
                     - R_vec)
 
         mom_rel = comm.allreduce(np.linalg.norm(residual[free_mask]),
-                                 op=MPI.SUM) / (
-                  comm.allreduce(np.linalg.norm(
-                      m_lumped.x.array[:local_size][free_mask] * v_new[free_mask]),
-                      op=MPI.SUM) + 1e-15)
+                                 op=MPI.SUM) 
 
 
         if rank == 0:
