@@ -270,7 +270,7 @@ for n in range(num_steps):
         mom_rel = comm.allreduce(np.linalg.norm(residual[free_mask]),
                                  op=MPI.SUM) / (
                   comm.allreduce(np.linalg.norm(
-                      m_lumped.x.array[:local_size][free_mask] * a_new[free_mask]),
+                      m_lumped.x.array[:local_size][free_mask] * v_new[free_mask]),
                       op=MPI.SUM) + 1e-15)
 
 
