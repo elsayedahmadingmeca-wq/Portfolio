@@ -4,7 +4,7 @@ Neo-Hookean material, prescribed shock kinematics at the bottom face.
 
 Validation checks (undamped, rayleigh_alpha = 0):
   - Energy balance  : E_kin + E_pot - W_ext = const  (< 1 % drift)
-  - Momentum balance: ||M_L*a - f_int - R|| / ||M_L*a||  ~ 1e-8
+  - Momentum balance: ||M_L*a - f_int - R||  ~ 1e-8
 
 References:
   [1] Dokken, The FEniCSx Tutorial, 2023
@@ -302,11 +302,11 @@ if rank == 0:
 
     print("\n── Energy balance ───────────────────────────────────")
     print(f"   Drift : {drift:.4e} J  ({rel_drift:.4f} %)")
-    print("   ✅ OK" if rel_drift < 1.0 else "   ⚠️  > 1 %")
+    print("    OK" if rel_drift < 1.0 else "     > 1 %")
 
     print("\n── Momentum residual ────────────────────────────────")
     print(f"   Max   : {mom_max:.4e}")
-    print("   ✅ OK" if mom_max < 1e-6 else "   ⚠️  > 1e-6")
+    print("   OK" if mom_max < 1e-6 else "     > 1e-6")
 
     np.save("log_energy.npy",   np.column_stack([
         log_t, log_E_kin, log_E_pot, log_W_ext, log_balance]))
