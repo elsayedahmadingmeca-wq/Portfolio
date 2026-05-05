@@ -126,6 +126,8 @@ psi = (mu / 2) * (Ic - 3) - mu * ufl.ln(J_det) + (lam / 2) * (ufl.ln(J_det))**2
 f_int_form = fem.form(
     -ufl.derivative(psi * dx, u, ufl.TestFunction(V))
 )
+# Gateaux derivative here, it is " a deriative in the direction of space functions" . F_int is evaluated from the response 
+# of a virtual displacement in V. 
 f_int_vec  = petsc.create_vector(f_int_form)
 E_pot_form = fem.form(psi * dx)
 
