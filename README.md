@@ -78,3 +78,4 @@ gmsh
 - Logg, Mardal, Wells. *Automated Solution of Differential Equations by the FEM.*
   Springer, 2012. — [fenicsproject.org/book](https://fenicsproject.org/book)
 - Dokken. *The FEniCSx Tutorial*, 2023. — [jsdokken.com/dolfinx-tutorial](https://jsdokken.com/dolfinx-tutorial)
+- https://docs.fenicsproject.org/ufl/main/manual/introduction.html
